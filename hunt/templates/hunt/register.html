@@ -1,0 +1,91 @@
+{% extends 'hunt/base.html' %}
+
+{% block content %}
+<style>
+    .auth-wrap { max-width: 480px; margin: 3rem auto; }
+
+    .auth-header { text-align: center; margin-bottom: 2rem; }
+    .auth-header h2 { font-size: 2.2rem; color: var(--cream); margin-bottom: 0.5rem; }
+    .auth-header p { color: var(--fog); font-size: 0.95rem; font-weight: 300; }
+
+    .auth-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(196,134,74,0.15);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+
+    .auth-card p { margin-bottom: 1.2rem; }
+    .auth-card p label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--fog);
+        margin-bottom: 6px;
+    }
+    .auth-card p input {
+        width: 100%;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(139,158,138,0.25);
+        border-radius: 6px;
+        padding: 10px 14px;
+        color: var(--cream);
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.95rem;
+    }
+    .auth-card p input:focus { outline: none; border-color: var(--dawn); }
+
+    .helptext {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--fog);
+        margin-top: 4px;
+        font-weight: 300;
+    }
+
+    .errorlist {
+        color: #E07070;
+        font-size: 0.82rem;
+        list-style: none;
+        margin-top: 4px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        background: var(--dawn);
+        color: var(--bark);
+        border: none;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        margin-top: 0.5rem;
+    }
+    .btn-primary:hover { background: var(--dawn-light); transform: translateY(-1px); }
+
+    .auth-footer { text-align: center; margin-top: 1.5rem; color: var(--fog); font-size: 0.9rem; }
+    .auth-footer a { color: var(--dawn-light); text-decoration: none; }
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-header">
+        <h2>Create Account</h2>
+        <p>Start tracking your hunting spots today</p>
+    </div>
+    <div class="auth-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+    </div>
+    <div class="auth-footer">
+        Already have an account? <a href="{% url 'login' %}">Sign in</a>
+    </div>
+</div>
+{% endblock %}

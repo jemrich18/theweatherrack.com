@@ -1,0 +1,98 @@
+{% extends 'hunt/base.html' %}
+
+{% block content %}
+<style>
+    .form-wrap { max-width: 480px; margin: 3rem auto; }
+
+    .form-header { margin-bottom: 2rem; }
+    .form-header h2 { font-size: 2rem; color: var(--cream); margin-bottom: 0.4rem; }
+    .form-header p { color: var(--fog); font-weight: 300; }
+
+    .form-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(196,134,74,0.15);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+
+    .form-card p { margin-bottom: 1.2rem; }
+    .form-card p label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--fog);
+        margin-bottom: 6px;
+    }
+    .form-card p input {
+        width: 100%;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(139,158,138,0.25);
+        border-radius: 6px;
+        padding: 10px 14px;
+        color: var(--cream);
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+    }
+    .form-card p input:focus { outline: none; border-color: var(--dawn); }
+
+    .helptext {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--fog);
+        margin-top: 4px;
+        font-weight: 300;
+    }
+
+    .errorlist { color: #E07070; font-size: 0.82rem; list-style: none; margin-top: 4px; }
+
+    .form-actions { display: flex; gap: 1rem; margin-top: 1rem; }
+
+    .btn-primary {
+        flex: 1;
+        background: var(--dawn);
+        color: var(--bark);
+        border: none;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--dawn-light); transform: translateY(-1px); }
+
+    .btn-cancel {
+        background: transparent;
+        border: 1px solid rgba(139,158,138,0.25);
+        color: var(--fog);
+        border-radius: 6px;
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        text-align: center;
+        transition: all 0.2s;
+    }
+    .btn-cancel:hover { border-color: var(--fog); color: var(--cream); }
+</style>
+
+<div class="form-wrap">
+    <div class="form-header">
+        <h2>Add Hunting Area</h2>
+        <p>Enter a name and location — we'll handle the rest</p>
+    </div>
+    <div class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Save Area</button>
+                <a href="{% url 'dashboard' %}" class="btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

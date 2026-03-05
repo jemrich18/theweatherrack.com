@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Rack — Deer Hunt Forecast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bark: #2C1810;
+            --bark-light: #3D2314;
+            --moss: #3B4A2F;
+            --moss-light: #4E6340;
+            --dawn: #C4864A;
+            --dawn-light: #E8A96A;
+            --fog: #8B9E8A;
+            --cream: #F2EDE4;
+            --cream-dark: #E0D8CC;
+            --excellent: #4A7C3F;
+            --good: #6B8F3E;
+            --fair: #C4864A;
+            --poor: #8B3A2F;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bark);
+            background-image: 
+                radial-gradient(ellipse at 20% 50%, rgba(61,35,20,0.8) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(59,74,47,0.4) 0%, transparent 50%);
+            min-height: 100vh;
+            font-family: 'Source Sans 3', sans-serif;
+            color: var(--cream);
+        }
+
+        /* Grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        nav {
+            background: rgba(20, 10, 5, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(196, 134, 74, 0.2);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--dawn);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+
+        .nav-brand span {
+            color: var(--cream);
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--fog);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--dawn-light); }
+
+        .nav-user {
+            color: var(--cream-dark);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid rgba(196,134,74,0.4);
+            color: var(--fog);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(196,134,74,0.15);
+            color: var(--dawn-light);
+            border-color: var(--dawn);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            background: rgba(196,134,74,0.15);
+            border-left: 3px solid var(--dawn);
+            color: var(--dawn-light);
+        }
+
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'dashboard' %}" class="nav-brand">Weather<span>Rack</span></a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <span class="nav-user">{{ user.username }}</span>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <form method="post" action="{% url 'logout' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

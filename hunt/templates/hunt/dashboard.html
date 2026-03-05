@@ -1,0 +1,168 @@
+{% extends 'hunt/base.html' %}
+
+{% block content %}
+<style>
+    .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(196,134,74,0.15);
+    }
+
+    .dash-header h2 {
+        font-size: 2rem;
+        color: var(--cream);
+    }
+
+    .dash-header p {
+        color: var(--fog);
+        font-size: 0.9rem;
+        margin-top: 4px;
+        font-weight: 300;
+    }
+
+    .btn-add {
+        background: var(--dawn);
+        color: var(--bark);
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: background 0.2s, transform 0.1s;
+        white-space: nowrap;
+    }
+
+    .btn-add:hover { background: var(--dawn-light); transform: translateY(-1px); }
+
+    .areas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .area-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(196,134,74,0.15);
+        border-radius: 10px;
+        padding: 1.5rem;
+        transition: border-color 0.2s, transform 0.2s;
+        animation: fadeUp 0.4s ease both;
+    }
+
+    .area-card:hover {
+        border-color: rgba(196,134,74,0.4);
+        transform: translateY(-2px);
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .area-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: var(--cream);
+        margin-bottom: 0.5rem;
+    }
+
+    .area-coords {
+        font-size: 0.8rem;
+        color: var(--fog);
+        font-weight: 300;
+        margin-bottom: 1.2rem;
+        font-family: monospace;
+    }
+
+    .area-actions {
+        display: flex;
+        gap: 0.8rem;
+        align-items: center;
+    }
+
+    .btn-forecast {
+        flex: 1;
+        background: var(--moss);
+        color: var(--cream);
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        transition: background 0.2s;
+    }
+
+    .btn-forecast:hover { background: var(--moss-light); }
+
+    .btn-delete {
+        background: transparent;
+        border: 1px solid rgba(139,58,47,0.4);
+        color: rgba(224,112,112,0.7);
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-family: 'Source Sans 3', sans-serif;
+        transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+        background: rgba(139,58,47,0.2);
+        color: #E07070;
+        border-color: rgba(139,58,47,0.7);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        color: var(--fog);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        color: var(--cream-dark);
+        margin-bottom: 0.5rem;
+    }
+    .empty-state p { font-weight: 300; margin-bottom: 1.5rem; }
+</style>
+
+<div class="dash-header">
+    <div>
+        <h2>My Hunting Areas</h2>
+        <p>Select an area to view the 10-day forecast</p>
+    </div>
+    <a href="{% url 'add_area' %}" class="btn-add">+ Add Area</a>
+</div>
+
+{% if areas %}
+    <div class="areas-grid">
+        {% for area in areas %}
+        <div class="area-card" style="animation-delay: {{ forloop.counter0 }}00ms">
+            <h3>{{ area.name }}</h3>
+            <div class="area-coords">{{ area.latitude|floatformat:4 }}° N, {{ area.longitude|floatformat:4 }}° W</div>
+            <div class="area-actions">
+                <a href="{% url 'area_forecast' area.pk %}" class="btn-forecast">🌲 View Forecast</a>
+                <form method="post" action="{% url 'delete_area' area.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete" onclick="return confirm('Delete {{ area.name }}?')">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="icon">🦌</div>
+        <h3>No Hunting Areas Yet</h3>
+        <p>Add your first hunting spot to get started</p>
+        <a href="{% url 'add_area' %}" class="btn-add">+ Add Your First Area</a>
+    </div>
+{% endif %}
+{% endblock %}
