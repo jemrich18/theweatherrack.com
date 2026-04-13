@@ -6,6 +6,7 @@ from .models import HuntingArea
 from .forms import HuntingAreaForm
 from .utils import geocode_location, get_scored_forecast
 
+
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -21,8 +22,6 @@ def register(request):
 def dashboard(request):
     areas = HuntingArea.objects.filter(user=request.user)
     return render(request, 'hunt/dashboard.html', {'areas': areas})
-
-from .utils import geocode_location
 
 @login_required
 def add_area(request):
@@ -51,17 +50,6 @@ def delete_area(request, pk):
         area.delete()
         messages.success(request, 'Hunting area deleted.')
     return redirect('dashboard')
-
-from .utils import geocode_location, get_scored_forecast
-
-@login_required
-def area_forecast(request, pk):
-    area = get_object_or_404(HuntingArea, pk=pk, user=request.user)
-    forecast = get_scored_forecast(area.latitude, area.longitude)
-    return render(request, 'hunt/forecast.html', {
-        'area': area,
-        'forecast': forecast
-    })
 
 @login_required
 def area_forecast(request, pk):

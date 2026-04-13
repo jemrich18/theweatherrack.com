@@ -5,6 +5,7 @@ from timezonefinder import TimezoneFinder
 import pytz
 
 
+
 def geocode_location(location_string):
     url = 'https://nominatim.openstreetmap.org/search'
     params = {
@@ -59,9 +60,6 @@ def get_weather_data(latitude, longitude):
     except Exception:
         return None
 
-
-import ephem
-from datetime import datetime, date
 
 def get_moon_data(latitude, longitude, date_str):
     try:
@@ -311,6 +309,7 @@ def get_scored_forecast(latitude, longitude):
             'wind_max': day_data['wind_max'],
             'precip_prob': day_data['precip_prob'],
             'score': total_score,
+            'score_pct': round(total_score / 90 * 100),
             'rating': rating,
             'reasons': all_reasons,
             'pressure_change': round(weather_result['pressure_change'], 1),
@@ -320,5 +319,5 @@ def get_scored_forecast(latitude, longitude):
             'sunset': moon_data['sunset'] if moon_data else 'N/A',
         })
 
-    
+    scored_days.sort(key=lambda d: d['score'], reverse=True)
     return scored_days
