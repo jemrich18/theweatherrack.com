@@ -42,6 +42,7 @@ def get_weather_data(latitude, longitude):
             'precipitation_probability_max',
             'windspeed_10m_max',
             'windgusts_10m_max',
+            'winddirection_10m_dominant',
         ],
         'hourly': [
             'surface_pressure',
@@ -172,7 +173,7 @@ def get_pressure_trend(hourly_pressure, day_index):
     return max_change
 
 
-def score_day(day_data, day_index, hourly_pressure, avg_high_temp):
+def score_day(day_data, day_index, hourly_pressure, avg_high_temp, wind_direction=None):
     score = 0
     reasons = []
 
@@ -225,6 +226,23 @@ def score_day(day_data, day_index, hourly_pressure, avg_high_temp):
         score += 0
         reasons.append(f'High wind {wind} mph — deer bedded')
 
+    # --- Wind Direction Score (15 pts) ---
+    if wind_direction is not None:
+        if wind_direction in range(300, 361) or wind_direction in range(0, 46):
+            score += 15
+            reasons.append('North or northwest wind — favorable')
+        elif wind_direction in range(45, 136):
+            score += 5
+            reasons.append('East or southeast wind — mild')
+        elif wind_direction in range(135, 226):
+            score += 0
+            reasons.append('South or southwest wind — less favorable')
+        else:
+            score += 2
+            reasons.append('West wind — neutral')
+    else:
+        reasons.append('Wind direction unavailable')
+
     # --- Precipitation Score (10 pts) ---
     precip = day_data['precip_prob']
     if precip <= 10:
@@ -240,12 +258,17 @@ def score_day(day_data, day_index, hourly_pressure, avg_high_temp):
         score += 0
         reasons.append('High rain chance')
 
+    # --- Moon Timing Score (15 pts) ---
+    # This is handled outside this function in get_scored_forecast,
+    # so we keep this function focused on the weather factors and allow
+    # the calling code to add the moon contribution.
+
     # --- Rating Label ---
-    if score >= 60:
+    if score >= 70:
         rating = 'Excellent'
-    elif score >= 45:
+    elif score >= 52:
         rating = 'Good'
-    elif score >= 30:
+    elif score >= 35:
         rating = 'Fair'
     else:
         rating = 'Poor'
@@ -274,9 +297,10 @@ def get_scored_forecast(latitude, longitude):
             'temp_min': daily['temperature_2m_min'][i],
             'wind_max': daily['windspeed_10m_max'][i],
             'precip_prob': daily['precipitation_probability_max'][i],
+            'wind_dir': daily['winddirection_10m_dominant'][i] if 'winddirection_10m_dominant' in daily else None,
         }
 
-        weather_result = score_day(day_data, i, hourly_pressure, avg_temp)
+        weather_result = score_day(day_data, i, hourly_pressure, avg_temp, wind_direction=day_data['wind_dir'])
 
         moon_data = get_moon_data(latitude, longitude, date)
         if moon_data:
@@ -309,7 +333,7 @@ def get_scored_forecast(latitude, longitude):
             'wind_max': day_data['wind_max'],
             'precip_prob': day_data['precip_prob'],
             'score': total_score,
-            'score_pct': round(total_score / 90 * 100),
+            'score_pct': round(total_score / 105 * 100),
             'rating': rating,
             'reasons': all_reasons,
             'pressure_change': round(weather_result['pressure_change'], 1),

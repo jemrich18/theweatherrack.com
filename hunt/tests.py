@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from unittest.mock import patch
 from .models import HuntingArea
+from .utils import score_day
 
 
 class HuntingAreaModelTest(TestCase):
@@ -165,3 +166,14 @@ class ForecastViewTest(TestCase):
         ]
         response = self.client.get(f'/forecast/{self.area.pk}/')
         self.assertEqual(response.status_code, 200)
+
+    def test_favorable_wind_direction_improves_score(self):
+        day_data = {
+            'temp_max': 55,
+            'temp_min': 40,
+            'wind_max': 10,
+            'precip_prob': 5,
+        }
+        favorable = score_day(day_data, 0, [1010] * 24, 60, wind_direction=330)
+        unfavorable = score_day(day_data, 0, [1010] * 24, 60, wind_direction=180)
+        self.assertGreater(favorable['score'], unfavorable['score'])

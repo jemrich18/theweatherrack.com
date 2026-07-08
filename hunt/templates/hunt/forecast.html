@@ -301,7 +301,7 @@
     <div class="icon">🦌</div>
     <div>
         <h3>Best Day to Hunt: {{ forecast.0.date }}</h3>
-        <p>{{ forecast.0.rating }} conditions — score {{ forecast.0.score }} / 90 &nbsp;·&nbsp; {{ forecast.0.temp_max }}°F high &nbsp;·&nbsp; {{ forecast.0.wind_max }} mph wind</p>
+        <p>{{ forecast.0.rating }} conditions — score {{ forecast.0.score }} / 105 &nbsp;·&nbsp; {{ forecast.0.temp_max }}°F high &nbsp;·&nbsp; {{ forecast.0.wind_max }} mph wind</p>
     </div>
 </div>
 
@@ -324,7 +324,7 @@
         <div class="score-bar-wrap">
             <div class="score-label">
                 <span>Hunt Score</span>
-                <span>{{ day.score }} / 90</span>
+                <span>{{ day.score }} / 105</span>
             </div>
             <div class="score-bar">
                 <div class="score-fill fill-{{ day.rating|lower }}" style="width:{{ day.score_pct }}%"></div>
